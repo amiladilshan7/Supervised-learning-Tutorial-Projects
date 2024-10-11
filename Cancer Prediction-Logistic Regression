@@ -1,1 +1,49 @@
 
+import pandas as pd
+import seaborn as sns
+
+data=pd.read_csv('data.csv') # read and assign file data to variable named 'data'
+data.head() #shows top part of our data set
+data.info() #gives data information
+Clean the Data
+sns.heatmap(data.isnull()) #to find the null datas... etc
+data.drop(["Unnamed: 32","id"],axis=1,inplace=True)
+data.head()
+data.diagnosis = [1 if each == "M" else 0 for each in data.diagnosis]
+data.head()
+data["diagnosis"]= data["diagnosis"].astype("category",copy=False)
+data["diagnosis"].value_counts().plot(kind="bar")
+#divide into target variable and predictators
+y = data["diagnosis"] #target variable
+x = data.drop(["diagnosis"],axis=1)
+Normalize the Data
+ from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler() #create scalar object
+X_scaled= scaler.fit_transform(x) #fit the scalar to the data and transform the data
+X_scaled
+Split the Data
+from  sklearn.model_selection import train_test_split
+
+X_train,X_test,y_train,y_test = train_test_split(X_scaled,y,test_size=0.2,random_state=42)
+Tain the Model
+from sklearn.linear_model import LogisticRegression
+#create the log regression model
+lr_model = LogisticRegression().fit(X_train,y_train)
+
+#train the model on the training data
+lr_model.fit(X_train,y_train)
+
+#predict the target variable on test data
+y_pred = lr_model.predict(X_test)
+
+Evaluation of the Model
+
+from sklearn.metrics import confusion_matrix,classification_report,accuracy_score
+
+accuracy= accuracy_score(y_test,y_pred)
+print(f"Accuracy:{accuracy: .2f}")
+
+
+from sklearn.metrics import classification_report
+print(classification_report(y_test,y_pred))
+
